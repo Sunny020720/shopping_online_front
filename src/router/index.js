@@ -28,7 +28,7 @@ const router = new VueRouter({
         { path: '/user', component: User }
       ]
     },
-    { path: 'search', component: Search },
+    { path: '/search', component: Search },
     { path: '/searchList', component: SearchList },
     // 动态传参商品id
     { path: '/prodetail/:id', component: ProDetail },
