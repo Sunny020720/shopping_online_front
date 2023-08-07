@@ -9,42 +9,103 @@
 
       <div class="form">
         <div class="form-item">
-          <input class="inp" maxlength="11" placeholder="请输入手机号码" type="text">
+          <input v-model="mobile" class="inp" maxlength="11" placeholder="请输入手机号码" type="text">
         </div>
         <div class="form-item">
-          <input class="inp" maxlength="5" placeholder="请输入图形验证码" type="text">
+          <input v-model="picCode" class="inp" maxlength="4" placeholder="请输入图形验证码" type="text">
           <img v-if="picUrl" :src="picUrl" @click="getPicCode" alt="">
         </div>
         <div class="form-item">
-          <input class="inp" placeholder="请输入短信验证码" type="text">
-          <button>获取验证码</button>
+          <input v-model="msgCode" maxlength="6" class="inp" placeholder="请输入短信验证码" type="text">
+          <button @click="getCode">
+            {{ second === totalSecond ? '获取验证码' : second + '秒后重新发送' }}
+          </button>
         </div>
       </div>
 
-      <div class="login-btn">登录</div>
+      <div @click="login" class="login-btn">登录</div>
     </div>
   </div>
 </template>
 <script>
-import { getPicCode } from '@/api/login'
+import { codeLogin, getMsgCode, getPicCode } from '@/api/login'
+
 export default {
   name: 'LoginIndex',
   data () {
     return {
       picUrl: '', // 图片地址
       picKey: '', // 唯一标识
-      picCode: '' // 用户输入的图形验证码
+      picCode: '', // 用户输入的图形验证码
+      totalSecond: 60, // 总秒数
+      second: 60, // 当前秒数，开定时器时--
+      timer: null, // 定时器唯一标识
+
+      mobile: '', // 手机号
+      msgCode: '' // 手机验证码
     }
   },
   async created () {
     await this.getPicCode()
   },
   methods: {
+    // 校验手机号 和 图形验证码
+    validFn () {
+      if (!/^1[3-9]\d{9}$/.test(this.mobile)) {
+        this.$toast('请输入正确的手机号')
+        return false
+      }
+      if (!/^\w{4}$/.test(this.picCode)) {
+        this.$toast('请输入正确的图形验证码')
+        return false
+      }
+      return true
+    },
+    async login () {
+      if (!this.validFn()) {
+        return
+      }
+      if (!/^\d{6}$/.test(this.msgCode)) {
+        this.$toast('请输入正确的手机验证码')
+        return
+      }
+      await codeLogin(this.mobile, this.msgCode)
+      // 此处应该判断
+      await this.$router.push('/')
+      this.$toast('登录成功')
+    },
+    // 获取验证码图片
     async getPicCode () {
       const { data: { base64, key } } = await getPicCode()
       this.picKey = key
       this.picUrl = base64
+      this.$toast.success('获取图形验证码成功')
+    },
+    // 获取验证码
+    async getCode () {
+      // 判断手机号&图形验证码
+      if (!this.validFn()) {
+        return
+      }
+      if (!this.timer && this.second === this.totalSecond) {
+        // 发送请求
+        await getMsgCode(this.picCode, this.picKey, this.mobile)
+        this.$toast('发送成功，请注意查收')
+        // 开启倒计时
+        this.timer = setInterval(() => {
+          this.second--
+          if (this.second <= 0) {
+            clearInterval(this.timer)
+            this.timer = null // 重置定时器 id
+            this.second = this.totalSecond // 归位
+          }
+        }, 1000)
+      }
     }
+  },
+  // 离开页面
+  destroyed () {
+    clearInterval(this.timer)// 清除定时器
   }
 }
 </script>
@@ -55,10 +116,12 @@ export default {
 
   .title {
     margin-bottom: 20px;
+
     h3 {
       font-size: 26px;
       font-weight: normal;
     }
+
     p {
       line-height: 40px;
       font-size: 14px;
@@ -72,6 +135,7 @@ export default {
     margin-bottom: 14px;
     display: flex;
     align-items: center;
+
     .inp {
       display: block;
       border: none;
@@ -80,10 +144,12 @@ export default {
       font-size: 14px;
       flex: 1;
     }
+
     img {
       width: 94px;
       height: 31px;
     }
+
     button {
       height: 31px;
       border: none;
@@ -98,10 +164,10 @@ export default {
     width: 100%;
     height: 42px;
     margin-top: 39px;
-    background: linear-gradient(90deg,#ecb53c,#ff9211);
+    background: linear-gradient(90deg, #ecb53c, #ff9211);
     color: #fff;
     border-radius: 39px;
-    box-shadow: 0 10px 20px 0 rgba(0,0,0,.1);
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .1);
     letter-spacing: 2px;
     display: flex;
     justify-content: center;
