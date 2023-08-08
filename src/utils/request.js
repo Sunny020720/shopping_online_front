@@ -9,6 +9,12 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
+  Toast.loading({
+    message: '请求中...',
+    forbidClick: true,
+    loadingType: 'spinner',
+    duration: 0
+  })
   return config
 }, function (error) {
   // 请求错误处理
@@ -19,9 +25,11 @@ request.interceptors.response.use(function (response) {
   // 对响应数据处理 (默认axios会多包装一层data)
   const res = response.data
   if (res.status !== 200) {
-    Toast(res.message)
+    Toast(res.message) // Toast默认单例模式 会将前一个覆盖
     // 抛出一个错误的promise
     return Promise.reject(res.message)
+  } else {
+    Toast.clear()
   }
   return response.data
 }, function (error) {
