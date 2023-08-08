@@ -23,7 +23,7 @@ request.interceptors.response.use(function (response) {
     // 抛出一个错误的promise
     return Promise.reject(res.message)
   }
-  return res
+  return response.data
 }, function (error) {
   return Promise.reject(error)
 })
