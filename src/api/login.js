@@ -16,7 +16,7 @@ export const getMsgCode = (captchaCode, captchaKey, mobile) => {
 }
 // 3. 登录
 export const codeLogin = (mobile, smsCode) => {
-  return request.post('/captcha/sendSmsCaptcha', {
+  return request.post('/passport/login', {
     form: {
       isParty: false,
       mobile,
