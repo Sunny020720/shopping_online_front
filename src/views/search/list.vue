@@ -54,6 +54,7 @@ export default {
   async created () {
     // 获取搜索的商品列表
     const { data: { list } } = await getProList({
+      categoryId: this.$route.query.categoryId,
       goodsName: this.querySearch,
       page: this.page
     })
