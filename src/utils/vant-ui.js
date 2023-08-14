@@ -1,6 +1,7 @@
 import Vue from 'vue'
-import { Search, Swipe, SwipeItem, Grid, GridItem, Button, Rate, Tabbar, TabbarItem, NavBar, Field, Cell, Toast, Icon } from 'vant'
+import { Search, Swipe, SwipeItem, Grid, GridItem, Button, Rate, Tabbar, TabbarItem, NavBar, Field, Cell, Toast, Icon, ActionSheet } from 'vant'
 
+Vue.use(ActionSheet)
 Vue.use(Icon)
 Vue.use(GridItem)
 Vue.use(Search)
