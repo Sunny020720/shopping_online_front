@@ -96,7 +96,7 @@
         </div>
         <div class="num-box">
           <span>数量</span>
-          数字框占位
+          <CountBox v-model="addCount"></CountBox>
         </div>
         <div class="showbtn" v-if="detail.stock_total > 0">
           <div class="btn" v-if="mode==='cart'">加入购物车</div>
@@ -111,8 +111,13 @@
 <script>
 import { getProComment, getProDetail } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
+import CountBox from '@/components/CountBox'
+
 export default {
   name: 'ProDetailIndex',
+  components: {
+    CountBox
+  },
   data () {
     return {
       images: [// 轮播图
@@ -122,8 +127,9 @@ export default {
       total: 0, // 评价总数
       commentList: [], // 评价列表
       defaultImg, // 默认头像
-      mode: '',
-      showPannel: false
+      mode: '', // 加入购物车或立即购买
+      showPannel: false, // 展示购物车弹窗
+      addCount: 1 // 数字框组件数字
     }
   },
   computed: {
