@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { Toast } from 'vant'
+import store from '@/store'
+
 // 创建一个新的axios实例
 const request = axios.create({
   baseURL: 'http://cba.itlike.com/public/index.php?s=/api/',
@@ -15,11 +17,20 @@ request.interceptors.request.use(function (config) {
     loadingType: 'spinner',
     duration: 0
   })
+
+  // 只要有token，就在请求时携带
+  const token = store.getters.token
+  if (token) {
+    config.headers['Access-Token'] = token
+    config.headers.platform = 'H5'
+  }
+
   return config
 }, function (error) {
   // 请求错误处理
   return Promise.reject(error)
 })
+
 // 响应拦截器
 request.interceptors.response.use(function (response) {
   // 对响应数据处理 (默认axios会多包装一层data)
