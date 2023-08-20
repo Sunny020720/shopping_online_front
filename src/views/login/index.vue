@@ -71,8 +71,13 @@ export default {
       }
       const res = await codeLogin(this.mobile, this.msgCode)
       this.$store.commit('user/setUserInfo', res.data)
-      await this.$router.push('/')
       this.$toast('登录成功')
+
+      // 判断有无回跳地址
+      // 1.有 => 说明是其他页面拦截来的，需要回跳
+      // 2.如果没有 = >正常去首页
+      const url = this.$route.query.backUrl || '/'
+      await this.$router.push(url)
     },
     // 获取验证码图片
     async getPicCode () {
