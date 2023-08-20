@@ -70,6 +70,7 @@
         <span>首页</span>
       </div>
       <div class="icon-cart">
+        <span v-if="cartTotal > 0" class="num">{{ cartTotal }}</span>
         <van-icon name="shopping-cart-o" />
         <span>购物车</span>
       </div>
@@ -112,6 +113,7 @@
 import { getProComment, getProDetail } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox'
+import { addCart } from '@/api/cart'
 
 export default {
   name: 'ProDetailIndex',
@@ -129,7 +131,8 @@ export default {
       defaultImg, // 默认头像
       mode: '', // 加入购物车或立即购买
       showPannel: false, // 展示购物车弹窗
-      addCount: 1 // 数字框组件数字
+      addCount: 1, // 数字框组件数字
+      cartTotal: 0 // 购物车数量
     }
   },
   computed: {
@@ -163,7 +166,7 @@ export default {
       this.mode = 'buyNow'
       this.showPannel = true
     },
-    async addCart () {
+    async addCart () { // 加入购物车
       // 判断用户是否登录（token
       // 1.没有登录
       if (!this.$store.getters.token) {
@@ -185,7 +188,11 @@ export default {
           .catch(() => {}) // cancel
         return
       }
-      console.log('正常请求')
+      const { data } = await addCart(this.goodsId, this.addCount,
+        this.detail.skuList[0].goods_sku_id)
+      this.cartTotal = data.cartTotal
+      this.$toast('加入购物车成功')
+      this.showPannel = false // 关闭弹窗
     }
   }
 }
@@ -383,6 +390,23 @@ export default {
   }
   .btn-none {
     background-color: #cccccc;
+  }
+}
+// 购物车
+.footer .icon-cart {
+  position: relative;
+  padding: 0 6px;
+  .num {
+    z-index: 999;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    min-width: 16px;
+    padding: 0 4px;
+    color: #fff;
+    text-align: center;
+    background-color: #ee0a24;
+    border-radius: 50%;
   }
 }
 </style>
