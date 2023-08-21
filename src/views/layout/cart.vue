@@ -38,8 +38,9 @@
           <span>合计：</span>
           <span>¥ <i class="totalPrice">{{selPrice}}</i></span>
         </div>
-        <div v-if="true" class="goPay">结算({{selCount}})</div>
-        <div v-else class="delete">删除</div>
+        <div v-if="true" :class="{disabled: selCount===0}"
+             class="goPay">结算({{selCount}})</div>
+        <div v-else :class="{disabled: selCount===0}">删除</div>
       </div>
     </div>
   </div>
