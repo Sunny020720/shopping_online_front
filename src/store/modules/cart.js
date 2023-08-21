@@ -25,5 +25,24 @@ export default {
       context.commit('setCartList', data.list)
     }
   },
-  getters: {}
+  getters: {
+    // 所有商品总数
+    cartTotal (state) {
+      return state.cartList.reduce((sum, item) => sum + item.goods_num, 0)
+    },
+    // 选中的商品项
+    selCartList (state) {
+      return state.cartList.filter(item => item.isChecked)
+    },
+    // 选中的所有商品总数
+    selCount (state, getters) {
+      return getters.selCartList.reduce((sum, item) => sum + item.goods_num, 0)
+    },
+    // 选中的总价
+    selPrice (state, getters) {
+      return getters.selCartList.reduce((sum, item) => {
+        return sum + item.goods_num * item.goods.goods_price_min
+      }, 0).toFixed(2)
+    }
+  }
 }
