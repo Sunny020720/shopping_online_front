@@ -12,6 +12,18 @@ export default {
     // 设置cartList
     setCartList (state, newList) {
       state.cartList = newList
+    },
+    // 小选框
+    toggleCheck (state, goodsId) {
+      // 让对应id的项 状态取反
+      const goods = state.cartList.find(item => item.goods_id === goodsId)
+      goods.isChecked = !goods.isChecked
+    },
+    // 全选框 控制小选
+    toggleAllCheck (state, isAllChecked) {
+      state.cartList.forEach(item => {
+        item.isChecked = isAllChecked
+      })
     }
   },
   actions: {
@@ -43,6 +55,11 @@ export default {
       return getters.selCartList.reduce((sum, item) => {
         return sum + item.goods_num * item.goods.goods_price_min
       }, 0).toFixed(2)
+    },
+
+    // 全选中
+    isAllChecked (state) {
+      return state.cartList.every(item => item.isChecked)
     }
   }
 }
