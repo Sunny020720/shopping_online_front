@@ -22,3 +22,10 @@ export const changeCount = (goodsId, goodsNum, goodsSkuId) => {
     goodsId
   })
 }
+
+// 删除购物车商品
+export const deleteSelect = (cartIds) => {
+  return request.post('/cart/clear', {
+    cartIds
+  })
+}
