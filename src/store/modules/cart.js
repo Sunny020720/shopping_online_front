@@ -1,5 +1,6 @@
 // 购物车列表数据
-import { changeCount, getCartList } from '@/api/cart'
+import { changeCount, deleteSelect, getCartList } from '@/api/cart'
+import { Toast } from 'vant'
 
 export default {
   namespaced: true,
@@ -53,6 +54,16 @@ export default {
         goodsId,
         goodsNum
       })
+    },
+    // 删除购物车商品
+    async delAction (context) {
+      const selCartList = context.getters.selCartList
+      const cartIds = selCartList.map(item => item.id)
+      // 后台修改
+      await deleteSelect(cartIds)
+      Toast('删除成功')
+      // 本地修改(重新渲染)
+      context.dispatch('getCartAction')
     }
   },
   getters: {
