@@ -42,7 +42,9 @@
         </div>
         <div v-if="!isEdit" :class="{disabled: selCount===0}"
              class="goPay">结算({{selCount}})</div>
-        <div v-else :class="{disabled: selCount===0}" class="delete">删除</div>
+        <div v-else :class="{disabled: selCount===0}"
+             class="delete"
+             @click="handleDel">删除</div>
       </div>
     </div>
   </div>
@@ -88,6 +90,11 @@ export default {
         goodsId,
         goodsSkuId
       })
+    },
+    // 删除购物车商品
+    async handleDel () {
+      if (this.selCount === 0) return
+      await this.$store.dispatch('cart/delAction')
     }
   },
   created () {
