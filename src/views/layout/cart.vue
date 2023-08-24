@@ -63,6 +63,15 @@ export default {
     ...mapState('cart', ['cartList']),
     ...mapGetters('cart', ['cartTotal', 'selCount', 'selPrice', 'isAllChecked'])
   },
+  watch: {
+    isEdit (value) {
+      if (value) {
+        this.$store.commit('cart/toggleAllCheck', false)
+      } else {
+        this.$store.commit('cart/toggleAllCheck', true)
+      }
+    }
+  },
   methods: {
     // 小选
     toggleCheck (goodsId) {
