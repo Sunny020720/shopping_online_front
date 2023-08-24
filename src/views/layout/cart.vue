@@ -4,7 +4,7 @@
     <!-- 购物车开头 -->
     <div class="cart-title">
       <span class="all">共<i>{{ cartTotal }}</i>件商品</span>
-      <span class="edit">
+      <span @click="isEdit=!isEdit" class="edit">
         <van-icon name="edit" />
         编辑
       </span>
@@ -21,7 +21,9 @@
           <span class="tit text-ellipsis-2">{{item.goods.goods_name}}</span>
           <span class="bottom">
             <div class="price">¥ <span>{{item.goods.goods_price_min}}</span></div>
-            <CountBox :value="item.goods_num"></CountBox>
+            <CountBox
+              :value="item.goods_num"
+              @input="(value)=>changeCount(value,item.goods_id,item.goods_sku_id)"></CountBox>
           </span>
         </div>
       </div>
@@ -38,9 +40,9 @@
           <span>合计：</span>
           <span>¥ <i class="totalPrice">{{selPrice}}</i></span>
         </div>
-        <div v-if="true" :class="{disabled: selCount===0}"
+        <div v-if="!isEdit" :class="{disabled: selCount===0}"
              class="goPay">结算({{selCount}})</div>
-        <div v-else :class="{disabled: selCount===0}">删除</div>
+        <div v-else :class="{disabled: selCount===0}" class="delete">删除</div>
       </div>
     </div>
   </div>
@@ -52,6 +54,11 @@ import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'CartIndex',
   components: { CountBox },
+  data () {
+    return {
+      isEdit: false
+    }
+  },
   computed: {
     ...mapState('cart', ['cartList']),
     ...mapGetters('cart', ['cartTotal', 'selCount', 'selPrice', 'isAllChecked'])
@@ -64,6 +71,14 @@ export default {
     // 全选
     toggleAllCheck () {
       this.$store.commit('cart/toggleAllCheck', !this.isAllChecked)
+    },
+    // 修改购物车数量
+    changeCount (goodsNum, goodsId, goodsSkuId) {
+      this.$store.dispatch('cart/changeCountAction', {
+        goodsNum,
+        goodsId,
+        goodsSkuId
+      })
     }
   },
   created () {
