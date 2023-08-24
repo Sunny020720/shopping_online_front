@@ -1,5 +1,5 @@
 // 购物车列表数据
-import { getCartList } from '@/api/cart'
+import { changeCount, getCartList } from '@/api/cart'
 
 export default {
   namespaced: true,
@@ -24,9 +24,16 @@ export default {
       state.cartList.forEach(item => {
         item.isChecked = isAllChecked
       })
+    },
+    // 修改购物车数量
+    changeCount (state, { goodsId, goodsNum }) {
+      const obj = state.cartList.find(
+        item => item.goods_id === goodsId)
+      obj.goods_num = goodsNum
     }
   },
   actions: {
+    // 获得购物车列表数据
     async getCartAction (context) {
       const { data } = await getCartList()
       // 后台返回数据不包括复选框的选中状态
@@ -35,6 +42,17 @@ export default {
         item.isChecked = true
       })
       context.commit('setCartList', data.list)
+    },
+    // 修改购物车商品数量
+    async changeCountAction (context, obj) {
+      const { goodsId, goodsNum, goodsSkuId } = obj
+      // 同步后台
+      await changeCount(goodsId, goodsNum, goodsSkuId)
+      // 本地修改
+      context.commit('changeCount', {
+        goodsId,
+        goodsNum
+      })
     }
   },
   getters: {
