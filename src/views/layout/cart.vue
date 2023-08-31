@@ -1,6 +1,7 @@
 <template>
   <div class="cart">
     <van-nav-bar title="购物车" fixed />
+    <div v-if="isLogin && cartList.length > 0">
     <!-- 购物车开头 -->
     <div class="cart-title">
       <span class="all">共<i>{{ cartTotal }}</i>件商品</span>
@@ -47,6 +48,15 @@
              @click="handleDel">删除</div>
       </div>
     </div>
+    </div>
+
+    <div v-else class="empty-cart" >
+      <img src="@/assets/empty.png" alt="">
+      <div class="tips">
+        您的购物车是空的, 快去逛逛吧
+      </div>
+      <div class="btn" @click="$router.push('/')">去逛逛</div>
+    </div>
   </div>
 </template>
 
@@ -63,7 +73,10 @@ export default {
   },
   computed: {
     ...mapState('cart', ['cartList']),
-    ...mapGetters('cart', ['cartTotal', 'selCount', 'selPrice', 'isAllChecked'])
+    ...mapGetters('cart', ['cartTotal', 'selCount', 'selPrice', 'isAllChecked']),
+    isLogin () {
+      return this.$store.getters.token
+    }
   },
   watch: {
     isEdit (value) {
@@ -99,7 +112,7 @@ export default {
   },
   created () {
     // 必须是登陆过的用户，才能获取用户购物车列表
-    if (this.$store.getters.token) {
+    if (this.isLogin) {
       this.$store.dispatch('cart/getCartAction')
     }
   }
@@ -240,5 +253,31 @@ export default {
     }
   }
 
+}
+
+.empty-cart {
+  padding: 80px 30px;
+  img {
+    width: 140px;
+    height: 92px;
+    display: block;
+    margin: 0 auto;
+  }
+  .tips {
+    text-align: center;
+    color: #666;
+    margin: 30px;
+  }
+  .btn {
+    width: 110px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    background-color: #fa2c20;
+    border-radius: 16px;
+    color: #fff;
+    display: block;
+    margin: 0 auto;
+  }
 }
 </style>
