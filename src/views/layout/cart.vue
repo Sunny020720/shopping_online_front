@@ -42,7 +42,7 @@
           <span>¥ <i class="totalPrice">{{selPrice}}</i></span>
         </div>
         <div v-if="!isEdit" :class="{disabled: selCount===0}"
-             class="goPay">结算({{selCount}})</div>
+             @click="goPay" class="goPay">结算({{selCount}})</div>
         <div v-else :class="{disabled: selCount===0}"
              class="delete"
              @click="handleDel">删除</div>
@@ -73,7 +73,7 @@ export default {
   },
   computed: {
     ...mapState('cart', ['cartList']),
-    ...mapGetters('cart', ['cartTotal', 'selCount', 'selPrice', 'isAllChecked']),
+    ...mapGetters('cart', ['selCartList', 'cartTotal', 'selCount', 'selPrice', 'isAllChecked']),
     isLogin () {
       return this.$store.getters.token
     }
@@ -108,6 +108,18 @@ export default {
     async handleDel () {
       if (this.selCount === 0) return
       await this.$store.dispatch('cart/delAction')
+    },
+    // 跳转结算
+    goPay () {
+      if (this.selCount > 0) {
+        this.$router.push({
+          path: '/pay',
+          query: {
+            mode: 'cart',
+            cartIds: this.selCartList.map(item => item.id).join(',')
+          }
+        })
+      }
     }
   },
   created () {
