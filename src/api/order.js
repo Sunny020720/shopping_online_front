@@ -9,7 +9,7 @@ export const checkOrder = (mode, obj) => {
       mode,
       delivery: 5,
       couponId: 0,
-      isUsePoint: 0,
+      isUsePoints: 0,
       ...obj // 将传递过来的参数对象动态展开
     }
   })
