@@ -101,7 +101,8 @@
         </div>
         <div class="showbtn" v-if="detail.stock_total > 0">
           <div @click="addCart" class="btn" v-if="mode==='cart'">加入购物车</div>
-          <div class="btn now" v-else>立刻购买</div>
+          <div class="btn now" v-if="mode==='buyNow'"
+          @click="goBuyNow">立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>
       </div>
@@ -114,25 +115,34 @@ import { getProComment, getProDetail } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox'
 import { addCart } from '@/api/cart'
+import loginConfiim from '@/mixins/loginConfiim'
 
 export default {
   name: 'ProDetailIndex',
+  mixins: [loginConfiim],
   components: {
     CountBox
   },
   data () {
     return {
-      images: [// 轮播图
-      ],
+      // 轮播图
+      images: [],
       current: 0,
+      // 评价总数
       detail: {},
-      total: 0, // 评价总数
-      commentList: [], // 评价列表
-      defaultImg, // 默认头像
-      mode: '', // 加入购物车或立即购买
-      showPannel: false, // 展示购物车弹窗
-      addCount: 1, // 数字框组件数字
-      cartTotal: 0 // 购物车数量
+      total: 0,
+      // 评价列表
+      commentList: [],
+      // 默认头像
+      defaultImg,
+      // 加入购物车或立即购买
+      mode: '',
+      // 展示购物车弹窗
+      showPannel: false,
+      // 数字框组件数字
+      addCount: 1,
+      // 购物车数量
+      cartTotal: 0
     }
   },
   computed: {
@@ -166,33 +176,29 @@ export default {
       this.mode = 'buyNow'
       this.showPannel = true
     },
-    async addCart () { // 加入购物车
+    async addCart () {
+      // 加入购物车
       // 判断用户是否登录（token
-      // 1.没有登录
-      if (!this.$store.getters.token) {
-        this.$dialog.confirm({
-          title: '温馨提示',
-          message: '需要登陆',
-          confirmButtonText: '去登陆',
-          cancelButtonText: '取消'
-        })
-          .then(() => { // confirm
-            // 希望跳转到登录后能跳回来，需要在跳转去携带参数（当前的路径地址）
-            this.$router.replace({
-              path: '/login',
-              query: {
-                backUrl: this.$route.fullPath
-              }
-            })
-          })
-          .catch(() => {}) // cancel
-        return
-      }
+      if (this.loginConfrim()) { return }
       const { data } = await addCart(this.goodsId, this.addCount,
         this.detail.skuList[0].goods_sku_id)
       this.cartTotal = data.cartTotal
       this.$toast('加入购物车成功')
       this.showPannel = false // 关闭弹窗
+    },
+    goBuyNow () {
+      // 未登录
+      if (this.loginConfrim()) { return }
+      // 已登录
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'buyNow',
+          goodsId: this.goodsId,
+          goodsSkuId: this.detail.skuList[0].goods_sku_id,
+          goodsNum: this.addCount
+        }
+      })
     }
   }
 }
